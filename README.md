@@ -1,4 +1,38 @@
-MNIST Digit Recognizer: PCA & XGBoost PipelineThis project demonstrates an end-to-end machine learning pipeline for recognizing handwritten digits using the classic MNIST dataset. It includes data preprocessing, dimensionality reduction, model training, and a robust inference script for predicting custom, hand-drawn images.  🚀 Features & Pipeline BreakdownData Loading & Scaling: Fetches the mnist_784 dataset via Scikit-Learn and scales the pixel intensity values to a [0, 1] range using standard division (X / 255.0).  Dimensionality Reduction (PCA): Uses Principal Component Analysis (PCA) configured to retain 95% of the explained variance. This compresses the original 784-pixel features down to just 154 principal components, drastically speeding up training while maintaining accuracy.  Model Training & Cross-Validation: Trains and evaluates multiple classifiers, specifically Random Forest and XGBoost. The pipeline calculates accuracy, precision, recall, F1-score, and ROC-AUC (OVR and OVO) metrics. XGBoost achieved the highest performance with over 96% accuracy.  Model Export: The trained PCA transformer and the best XGBoost model are serialized and saved to disk as mnist_pca_transformer.pkl and best_xgb_model.json.  Custom Image Inference: Features a highly robust image preprocessing script using OpenCV and SciPy to process user-uploaded images so they match the original MNIST format perfectly.  🛠️ Tech StackData Manipulation & ML: numpy, pandas, scikit-learn, xgboost  Image Processing: cv2 (OpenCV), scipy.ndimage  Serialization: joblib  Visualization: matplotlib  🧠 How the Custom Image Processing WorksTo ensure custom images work with a model trained on MNIST, the inference script (predict_uploaded_image) performs the following steps:  Reads the image in grayscale and applies Otsu thresholding to cleanly binarize the image and remove background noise.  Forces a white digit on a black background by checking the mean pixel intensity.  Crops the image tightly around the digit's bounding box.  Resizes the cropped digit to fit inside a 20x20 pixel box while preserving its original aspect ratio.  Pastes the 20x20 digit into a blank 28x28 black canvas.  Calculates the center of mass of the pixels and shifts the image so the digit is perfectly centered, matching the strict MNIST standard.  💻 Quick Start (Inference)Ensure you have your saved models in the same directory, then run the inference function on your custom image:Pythonfrom scipy.ndimage import center_of_mass
+# MNIST Digit Recognizer: PCA & XGBoost Pipeline
+
+This project demonstrates an end-to-end machine learning pipeline for recognizing handwritten digits using the classic MNIST dataset. It includes data preprocessing, dimensionality reduction, model training, and a robust inference script for predicting custom, hand-drawn images.
+
+## 🚀 Features & Pipeline Breakdown
+
+*   **Data Loading & Scaling:** Fetches the `mnist_784` dataset via Scikit-Learn and scales the pixel intensity values to a `[0, 1]` range using standard division (`X / 255.0`).
+*   **Dimensionality Reduction (PCA):** Uses Principal Component Analysis (PCA) configured to retain 95% of the explained variance. This compresses the original 784-pixel features down to just 154 principal components, drastically speeding up training while maintaining accuracy.
+*   **Model Training & Cross-Validation:** Trains and evaluates multiple classifiers, specifically Random Forest and XGBoost. The pipeline calculates accuracy, precision, recall, F1-score, and ROC-AUC (OVR and OVO) metrics. XGBoost achieved the highest performance with over 96% accuracy.
+*   **Model Export:** The trained PCA transformer and the best XGBoost model are serialized and saved to disk as `mnist_pca_transformer.pkl` and `best_xgb_model.json`.
+*   **Custom Image Inference:** Features a highly robust image preprocessing script using OpenCV and SciPy to process user-uploaded images so they match the original MNIST format perfectly.
+
+## 🛠️ Tech Stack
+
+*   **Data Manipulation & ML:** `numpy`, `pandas`, `scikit-learn`, `xgboost`
+*   **Image Processing:** `cv2` (OpenCV), `scipy.ndimage`
+*   **Serialization:** `joblib`
+*   **Visualization:** `matplotlib`
+
+## 🧠 How the Custom Image Processing Works
+
+To ensure custom images work with a model trained on MNIST, the inference script (`predict_uploaded_image`) performs the following steps:
+1.  Reads the image in grayscale and applies Otsu thresholding to cleanly binarize the image and remove background noise.
+2.  Forces a white digit on a black background by checking the mean pixel intensity.
+3.  Crops the image tightly around the digit's bounding box.
+4.  Resizes the cropped digit to fit inside a 20x20 pixel box while preserving its original aspect ratio.
+5.  Pastes the 20x20 digit into a blank 28x28 black canvas.
+6.  Calculates the center of mass of the pixels and shifts the image so the digit is perfectly centered, matching the strict MNIST standard.
+
+## 💻 Quick Start (Inference)
+
+Ensure you have your saved models in the same directory, then run the inference function on your custom image:
+
+```python
+from scipy.ndimage import center_of_mass
 import joblib
 from xgboost import XGBClassifier
 import cv2
